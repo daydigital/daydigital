@@ -1,0 +1,383 @@
+<title>Post Production AI Accountability</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout concept: a reel can. Four numbered reels of graphics, each headed by a timecode strip. */
+:root{
+  --bg:#eceff2; --surface:#ffffff; --ink:#12161b; --muted:#566170; --line:#d2d8df;
+  --amber:#b05f00; --amber-soft:#f6e3c8; --teal:#0b6f78; --teal-soft:#cfe9ea;
+  --gap:#c9372c;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --body:"Barlow",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1014; --surface:#151a21; --ink:#e9edf1; --muted:#9aa5b3; --line:#2b333d;
+  --amber:#f2a33a; --amber-soft:#3a2a12; --teal:#4cc3cc; --teal-soft:#10353a; --gap:#ff6b5e;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1014; --surface:#151a21; --ink:#e9edf1; --muted:#9aa5b3; --line:#2b333d;
+  --amber:#f2a33a; --amber-soft:#3a2a12; --teal:#4cc3cc; --teal-soft:#10353a; --gap:#ff6b5e;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.02}
+h1{font-size:clamp(40px,7vw,76px);font-weight:700;letter-spacing:.01em;text-transform:uppercase}
+h2{font-size:clamp(28px,4vw,40px);font-weight:700;text-transform:uppercase}
+h3{font-size:20px;font-weight:600;letter-spacing:.03em;text-transform:uppercase}
+p{margin:0;max-width:65ch}
+.tc{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.reelhead{display:flex;flex-direction:column;gap:10px;border-top:3px solid var(--ink);padding-top:12px}
+.reelhead .row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.lede{color:var(--muted);font-size:18px}
+.banner{border:1px solid var(--amber);background:var(--amber-soft);padding:12px 16px;border-radius:4px;font-size:14px;max-width:none}
+.banner b{font-weight:600}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px}
+.stack{display:flex;flex-direction:column;gap:20px}
+
+/* pipeline */
+.pipe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.stage{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--amber);border-radius:4px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.stage:nth-child(even){border-top-color:var(--teal)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--line);border-radius:3px;padding:3px 8px;background:var(--bg)}
+.gen{margin-top:12px;border:1.5px dashed var(--amber);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.arrow{color:var(--muted);font-family:var(--mono);font-size:12px}
+
+/* matrix */
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:center;font-size:14px}
+th{font-weight:500;color:var(--muted);vertical-align:bottom;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+th:first-child,td:first-child{text-align:left}
+td:first-child{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
+tr.group td{background:var(--bg);font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;text-align:left}
+.dot{display:inline-block;width:18px;height:18px;border-radius:50%;border:2px solid var(--amber);vertical-align:middle}
+.dot.full{background:var(--amber)}
+.dot.half{background:linear-gradient(90deg,var(--amber) 50%,transparent 50%)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.score{font-family:var(--mono);color:var(--muted);font-size:13px}
+
+/* coverage bars */
+.bars{display:flex;flex-direction:column;gap:12px}
+.bar{display:grid;grid-template-columns:minmax(120px,230px) 1fr 70px;gap:12px;align-items:center}
+.track{height:14px;background:var(--bg);border-radius:0 3px 3px 0;position:relative}
+.fill{position:absolute;inset:0 auto 0 0;background:var(--teal);border-radius:0 4px 4px 0}
+.bar .n{font-family:var(--mono);font-size:13px;text-align:right}
+
+/* timeline */
+.tl{display:flex;flex-direction:column}
+.ev{display:grid;grid-template-columns:70px 14px 1fr;gap:14px;padding-bottom:18px}
+.ev .yr{font-family:var(--mono);font-size:14px;font-weight:500;padding-top:2px}
+.ev .mk{position:relative}
+.ev .mk::before{content:"";position:absolute;left:5px;top:0;bottom:-18px;width:2px;background:var(--line)}
+.ev:last-child .mk::before{display:none}
+.ev .mk i{position:absolute;left:0;top:6px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:3px solid var(--amber)}
+.ev.lab .mk i{border-color:var(--teal);border-radius:2px}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ev b{font-weight:600}
+
+/* chain */
+.chain{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;position:relative}
+.node{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.node h3{font-size:18px}
+.node .knows{font-size:13px;color:var(--muted)}
+.node.blind{border-color:var(--gap);border-style:dashed}
+.node.blind .tag{color:var(--gap)}
+.scen{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.scen .panel{display:flex;flex-direction:column;gap:10px}
+.q{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.q div{border-left:3px solid var(--teal);padding:4px 0 4px 12px;font-size:15px}
+.q b{display:block;font-family:var(--display);font-size:22px;color:var(--teal)}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.cols .panel{display:flex;flex-direction:column;gap:14px}
+.chart{display:flex;align-items:flex-end;gap:18px;height:190px;border-bottom:2px solid var(--ink);padding-top:24px}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;min-width:0}
+.col .v{font-family:var(--mono);font-size:15px;font-weight:500;font-variant-numeric:tabular-nums}
+.col .b{width:100%;max-width:90px;background:var(--teal);border-radius:4px 4px 0 0}
+.col.am .b{background:var(--amber)}
+.xl{display:flex;gap:18px}
+.xl span{flex:1;text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.flow{display:grid;grid-template-columns:minmax(130px,230px) 1fr 48px;gap:8px 12px;align-items:center}
+.flow .t{height:16px;background:var(--bg);border-radius:0 3px 3px 0}
+.flow .t i{display:block;height:100%;border-radius:0 4px 4px 0;background:var(--teal)}
+.flow .t.out i{background:var(--amber)}
+.flow .n{font-family:var(--mono);font-size:14px;text-align:right}
+.stat{display:flex;gap:28px;flex-wrap:wrap}
+.stat div{display:flex;flex-direction:column}
+.stat b{font-family:var(--display);font-size:44px;line-height:1;font-weight:700}
+.stat span{font-size:13px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+.chart.dense,.xl.dense{gap:8px}
+.flow.wide{grid-template-columns:minmax(150px,260px) 1fr 48px}
+h3.sub{font-size:26px;border-top:1px solid var(--line);padding-top:24px}
+@media (max-width:860px){.cols{grid-template-columns:1fr}.flow{grid-template-columns:1fr 44px}.flow .t{grid-column:1 / -1;order:3}}
+footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+@media (max-width:860px){
+  .pipe,.chain{grid-template-columns:1fr}
+  .scen,.q{grid-template-columns:1fr}
+  .bar{grid-template-columns:1fr 60px}
+  .bar .track{grid-column:1 / -1;order:3}
+}
+@media (prefers-reduced-motion:no-preference){.fill{transition:width .6s ease}}
+</style>
+
+<div class="wrap">
+
+<header class="stack">
+  <span class="tc">Report graphics · Draft 1 · Post production and AI</span>
+  <h1>Who answers for the shot the software made?</h1>
+  <p class="lede">The picture editor, sound mixer and VFX artist all work inside licensed software. That software now offers to translate dialogue, clean a voice, extend a shot or invent a stock plate. Nobody in the chain is required to say when it did.</p>
+  <p class="banner"><b>Draft for checking.</b> Tool features come from vendor announcements I know of through mid 2026. Every dot in Reel 2 needs checking against each vendor's current release notes before this goes in the report. Logos are shown as name tags, because the official logos have to come from each company's press kit.</p>
+</header>
+
+<!-- REEL 1 -->
+<section class="stack" aria-labelledby="r1">
+  <div class="reelhead">
+    <div class="row"><span class="tc">Reel 1 · TC 01:00:00:00</span><span class="tc">The standard toolset</span></div>
+    <h2 id="r1">Where the work happens</h2>
+    <p class="lede">Five stages, each with its common software. A generative layer now feeds all of them.</p>
+  </div>
+  <div class="pipe">
+    <div class="stage"><h3>Picture edit</h3><div class="chips"><span class="chip">Avid Media Composer</span><span class="chip">Adobe Premiere Pro</span><span class="chip">DaVinci Resolve</span><span class="chip">Final Cut Pro</span></div></div>
+    <div class="stage"><h3>Sound</h3><div class="chips"><span class="chip">Pro Tools</span><span class="chip">iZotope RX</span><span class="chip">Fairlight</span><span class="chip">Nuendo</span></div></div>
+    <div class="stage"><h3>Visual effects</h3><div class="chips"><span class="chip">Foundry Nuke</span><span class="chip">Autodesk Flame</span><span class="chip">After Effects</span><span class="chip">Houdini</span></div></div>
+    <div class="stage"><h3>Colour</h3><div class="chips"><span class="chip">DaVinci Resolve</span><span class="chip">FilmLight Baselight</span><span class="chip">Autodesk Flame</span></div></div>
+    <div class="stage"><h3>Localization</h3><div class="chips"><span class="chip">ElevenLabs</span><span class="chip">Flawless AI</span><span class="chip">Deepdub</span><span class="chip">Respeecher</span></div></div>
+  </div>
+  <div class="gen">
+    <span class="tc">Generative layer, touches every stage</span>
+    <div class="chips"><span class="chip">Runway</span><span class="chip">Adobe Firefly</span><span class="chip">Moonvalley</span><span class="chip">Topaz Video AI</span></div>
+    <span class="arrow">Some arrive as separate apps. Some now sit inside the timeline you already use.</span>
+  </div>
+</section>
+
+<!-- REEL 2 -->
+<section class="stack" aria-labelledby="r2">
+  <div class="reelhead">
+    <div class="row"><span class="tc">Reel 2 · TC 01:10:00:00</span><span class="tc">AI built into the software</span></div>
+    <h2 id="r2">How much AI is already inside</h2>
+    <p class="lede">Six jobs that used to need a person, a vendor or a budget line. Hover or tap a dot for the feature name.</p>
+  </div>
+  <div class="panel stack">
+    <div class="legend" aria-label="Legend">
+      <span><i class="dot full"></i>Built in</span>
+      <span><i class="dot half"></i>Partner, plug in or separate app</span>
+      <span><i class="dot"></i>None found</span>
+    </div>
+    <div class="scroll"><table id="matrix"></table></div>
+  </div>
+  <div class="panel stack">
+    <h3>Tools with the job built in</h3>
+    <div class="bars" id="bars"></div>
+    <p class="tc" id="barnote"></p>
+  </div>
+</section>
+
+<!-- REEL 3 -->
+<section class="stack" aria-labelledby="r3">
+  <div class="reelhead">
+    <div class="row"><span class="tc">Reel 3 · TC 01:20:00:00</span><span class="tc">Directors Guild of Canada figures</span></div>
+    <h2 id="r3">The people in the edit room</h2>
+    <p class="lede">Editing here means picture editing and sound editing together. Fewer productions are hiring editors while the number of members working as editors keeps rising.</p>
+  </div>
+  <div class="cols">
+    <div class="panel">
+      <h3>Productions with an editing position</h3>
+      <div class="chart" role="img" aria-label="Productions with an editing position: 2024 170, 2025 160, 2026 127">
+        <div class="col"><span class="v">170</span><div class="b" style="height:153px"></div></div>
+        <div class="col"><span class="v">160</span><div class="b" style="height:144px"></div></div>
+        <div class="col"><span class="v">127</span><div class="b" style="height:114px"></div></div>
+      </div>
+      <div class="xl"><span>2024</span><span>2025</span><span>2026</span></div>
+    </div>
+    <div class="panel">
+      <h3>Members who worked in an editing position</h3>
+      <div class="chart" role="img" aria-label="Members who worked in an editing position: 2024 423, 2025 434, 2026 450">
+        <div class="col am"><span class="v">423</span><div class="b" style="height:152px"></div></div>
+        <div class="col am"><span class="v">434</span><div class="b" style="height:156px"></div></div>
+        <div class="col am"><span class="v">450</span><div class="b" style="height:162px"></div></div>
+      </div>
+      <div class="xl"><span>2024</span><span>2025</span><span>2026</span></div>
+    </div>
+  </div>
+  <div class="panel stack">
+    <div class="stat">
+      <div><b>−25%</b><span>productions with an editing position, 2024 to 2026</span></div>
+      <div><b>+6%</b><span>members working in editing, 2024 to 2026</span></div>
+      <div><b>2.5 → 3.5</b><span>editing members per production</span></div>
+    </div>
+    <p class="note">Percentages and the ratio are calculated from the three years above. The ratio is a rough measure, since one member can work on more than one production. Confirm whether the 2026 figures cover the full year or only part of it. These numbers show the squeeze. They do not show what caused it.</p>
+  </div>
+  <div class="panel stack">
+    <h3>Guild membership movement, Jan 1, 2024 to Nov 3, 2026</h3>
+    <div class="flow" role="img" aria-label="New members 144, resigned 30, terminated 30, honourable withdrawal 27, returned from honourable withdrawal 8">
+      <span>New members</span><div class="t"><i style="width:100%"></i></div><span class="n">144</span>
+      <span>Returned from honourable withdrawal</span><div class="t"><i style="width:5.6%"></i></div><span class="n">8</span>
+      <span>Resigned</span><div class="t out"><i style="width:20.8%"></i></div><span class="n">30</span>
+      <span>Terminated</span><div class="t out"><i style="width:20.8%"></i></div><span class="n">30</span>
+      <span>Placed on honourable withdrawal</span><div class="t out"><i style="width:18.8%"></i></div><span class="n">27</span>
+    </div>
+    <div class="legend"><span><i class="dot full" style="background:var(--teal);border-color:var(--teal)"></i>Joining or returning</span><span><i class="dot full"></i>Leaving or pausing</span></div>
+    <p class="note">Net change is +65 (144 + 8 − 30 − 30 − 27), calculated here. The guild has tracked trends by department only since 2024. Confirm with the guild whether these movement figures cover all departments or editing only. A breakdown by department is still to come from their database coordinator.</p>
+  </div>
+  <h3 class="sub">Roster snapshot, November 3, 2026</h3>
+  <div class="panel stack">
+    <div class="stat">
+      <div><b>704</b><span>members in picture editing, sound editing and post production</span></div>
+      <div><b>594</b><span>of those in picture or sound editing</span></div>
+      <div><b>88%</b><span>full members (620 full, 84 associate)</span></div>
+      <div><b>91%</b><span>in one council, ODC (641 of 704)</span></div>
+    </div>
+    <p class="note">The other councils, as coded by the guild: MDC 15, MRC 14, NAT 13, ADC 9, NLDGC 7, INT 2, QDC 2, SDC 1. Spell out each code before publishing. About 3 in 4 members in picture and sound editing worked in an editing position in 2026 (450 of 594, calculated). The guild's two lists may not count the same way, so confirm that before using it.</p>
+  </div>
+  <div class="cols">
+    <div class="panel">
+      <h3>Members by role</h3>
+      <div class="flow" role="img" aria-label="Members by role, largest first: Picture Editor 227, Sound Editor 135, 1st Assistant Picture Editor 103, Post Production Supervisor 67, Trainee Assistant Picture Editor 44, 2nd Assistant Picture Editor 28, Post Production Coordinator 25, 1st Assistant Sound Editor 25, Trainee Assistant Sound Editor 22, Post Production PA 18, Music Editor 8, Assistant Picture Editor 2">
+        <span>Picture Editor</span><div class="t"><i style="width:100%"></i></div><span class="n">227</span>
+        <span>Sound Editor</span><div class="t"><i style="width:59.5%"></i></div><span class="n">135</span>
+        <span>1st Asst Picture Editor</span><div class="t"><i style="width:45.4%"></i></div><span class="n">103</span>
+        <span>Post Production Supervisor</span><div class="t"><i style="width:29.5%"></i></div><span class="n">67</span>
+        <span>Trainee Asst Picture Editor</span><div class="t"><i style="width:19.4%"></i></div><span class="n">44</span>
+        <span>2nd Asst Picture Editor</span><div class="t"><i style="width:12.3%"></i></div><span class="n">28</span>
+        <span>Post Production Coordinator</span><div class="t"><i style="width:11%"></i></div><span class="n">25</span>
+        <span>1st Asst Sound Editor</span><div class="t"><i style="width:11%"></i></div><span class="n">25</span>
+        <span>Trainee Asst Sound Editor</span><div class="t"><i style="width:9.7%"></i></div><span class="n">22</span>
+        <span>Post Production PA</span><div class="t"><i style="width:7.9%"></i></div><span class="n">18</span>
+        <span>Music Editor</span><div class="t"><i style="width:3.5%"></i></div><span class="n">8</span>
+        <span>Assistant Picture Editor</span><div class="t"><i style="width:0.9%"></i></div><span class="n">2</span>
+      </div>
+      <p class="note">Totals by group: picture editing 404, sound editing 190, post production 110.</p>
+    </div>
+    <div class="panel">
+      <h3>Members by age</h3>
+      <div class="chart dense" role="img" aria-label="Members by age: 20 to 29 is 45, 30 to 39 is 188, 40 to 49 is 172, 50 to 59 is 147, 60 to 69 is 103, 70 to 79 is 41, 80 to 89 is 8">
+        <div class="col"><span class="v">45</span><div class="b" style="height:34px"></div></div>
+        <div class="col"><span class="v">188</span><div class="b" style="height:141px"></div></div>
+        <div class="col"><span class="v">172</span><div class="b" style="height:129px"></div></div>
+        <div class="col"><span class="v">147</span><div class="b" style="height:110px"></div></div>
+        <div class="col"><span class="v">103</span><div class="b" style="height:77px"></div></div>
+        <div class="col"><span class="v">41</span><div class="b" style="height:31px"></div></div>
+        <div class="col"><span class="v">8</span><div class="b" style="height:6px"></div></div>
+      </div>
+      <div class="xl dense"><span>20s</span><span>30s</span><span>40s</span><span>50s</span><span>60s</span><span>70s</span><span>80s</span></div>
+      <p class="note">299 members (42%) are 50 or older. 45 members (6%) are under 30. Both calculated from the guild's counts.</p>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="panel">
+      <h3>Women as a share of each group</h3>
+      <div class="flow" role="img" aria-label="Women as a share of members: post production 48 percent, picture editing 31 percent, sound editing 24 percent">
+        <span>Post production</span><div class="t"><i style="width:48.2%"></i></div><span class="n">48%</span>
+        <span>Picture editing</span><div class="t"><i style="width:31.4%"></i></div><span class="n">31%</span>
+        <span>Sound editing</span><div class="t"><i style="width:23.7%"></i></div><span class="n">24%</span>
+      </div>
+      <p class="note">Bars run from 0 to 100 percent. Across all 704 members: 225 F, 472 M, 4 GNC, 3 PND, as coded by the guild. Picture editing is 127 F, 272 M, 3 GNC, 2 PND. Sound editing is 45 F, 145 M. Post production is 53 F, 55 M, 1 GNC, 1 PND. Shares are calculated here.</p>
+    </div>
+    <div class="panel">
+      <h3>Why this matters for the AI question</h3>
+      <p>Trainee roles total 66 members (9%), and assistant roles another 158 (22%). Together that is 224 of 704 (32%). Transcribing, syncing, logging and dialogue clean up are the kind of work that tools in Reel 2 now offer to do. The report can ask who trains the next editors if those tasks go to software.</p>
+      <p class="note">Calculated here. Trainees are 44 picture and 22 sound. Assistants are 103 first, 28 second and 2 general in picture, plus 25 first in sound. Decide which of these roles you want to count before you quote a figure.</p>
+    </div>
+  </div>
+  <p class="tc">Source: Directors Guild of Canada, National Member Services</p>
+</section>
+<section class="stack" aria-labelledby="r3">
+  <div class="reelhead">
+    <div class="row"><span class="tc">Reel 4 · TC 01:30:00:00</span><span class="tc">How it arrived</span></div>
+    <h2 id="r3">The quiet years, then the fast ones</h2>
+  </div>
+  <div class="panel tl">
+    <div class="ev"><span class="yr">2019</span><span class="mk"><i></i></span><div><span class="tag">Tool</span><br><b>DaVinci Resolve 16</b> adds a neural engine for face and object tools inside a colour and edit suite.</div></div>
+    <div class="ev"><span class="yr">2020</span><span class="mk"><i></i></span><div><span class="tag">Tool</span><br><b>After Effects Roto Brush 2</b> makes machine assisted masking an everyday step.</div></div>
+    <div class="ev"><span class="yr">2023</span><span class="mk"><i></i></span><div><span class="tag">Tool</span><br><b>Text based editing and Firefly</b> arrive from Adobe. Editing by transcript becomes normal.</div></div>
+    <div class="ev lab"><span class="yr">2023</span><span class="mk"><i></i></span><div><span class="tag">Labour</span><br><b>WGA and SAG AFTRA strikes</b> end with the first major AI terms in industry contracts.</div></div>
+    <div class="ev"><span class="yr">2024</span><span class="mk"><i></i></span><div><span class="tag">Tool</span><br><b>Generative Extend</b> previewed for Premiere Pro. Runway signs a studio deal with Lionsgate.</div></div>
+    <div class="ev"><span class="yr">2025</span><span class="mk"><i></i></span><div><span class="tag">Tool</span><br><b>Generated footage in a streaming series.</b> Netflix says generative AI made a building collapse shot in <i>El Eternauta</i>.</div></div>
+  </div>
+  <p class="tc">Check each date and wording against the original announcement before publishing.</p>
+</section>
+
+<!-- REEL 4 -->
+<section class="stack" aria-labelledby="r4">
+  <div class="reelhead">
+    <div class="row"><span class="tc">Reel 5 · TC 01:40:00:00</span><span class="tc">The open question</span></div>
+    <h2 id="r4">Where accountability goes missing</h2>
+    <p class="lede">A feature is one click inside a tool the artist already trusts. Follow the shot downstream and see who can know.</p>
+  </div>
+  <div class="chain">
+    <div class="node"><span class="tag">Step 1</span><h3>Software vendor</h3><span class="knows">Knows what the model is and what trained it.</span></div>
+    <div class="node"><span class="tag">Step 2</span><h3>Editor or artist</h3><span class="knows">Knows a button was pressed. May not know what sits behind it.</span></div>
+    <div class="node"><span class="tag">Step 3</span><h3>Post house</h3><span class="knows">Sees the delivered shot. The method may not be logged.</span></div>
+    <div class="node blind"><span class="tag">Step 4</span><h3>Studio or distributor</h3><span class="knows">Often relies on a signed deliverables sheet.</span></div>
+    <div class="node blind"><span class="tag">Step 5</span><h3>Audience</h3><span class="knows">Told nothing on screen, in most cases.</span></div>
+  </div>
+  <div class="scen">
+    <div class="panel"><span class="tc">Scenario A</span><h3>The language swap</h3><p>One click dubs and subtitles a whole feature. Dialogue is replaced, the actor's voice may be cloned, the lips may be redrawn. Did the actor consent? Was the translation checked by a person?</p></div>
+    <div class="panel"><span class="tc">Scenario B</span><h3>The two second plate</h3><p>A stable establishing shot of New York in 1966, requested and delivered in minutes. No archive licence, no photographer, no credit. Is it presented as real? Who decided?</p></div>
+  </div>
+  <div class="panel stack">
+    <h3>Four questions every tool should be able to answer</h3>
+    <div class="q">
+      <div><b>What changed</b>Did it generate, alter or replace picture or sound?</div>
+      <div><b>Whose work</b>What data trained the model, and was it licensed?</div>
+      <div><b>Whose face and voice</b>Was a performer's likeness copied or synthesized?</div>
+      <div><b>Who approved</b>Who signed off, and where is that recorded?</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="tc">Sources to collect before publishing</span>
+  <span>Directors Guild of Canada member counts (Reel 3), still awaiting the department breakdown. Vendor release notes for each tool in Reel 2. Original announcements for each date in Reel 3. Current WGA, SAG AFTRA, DGA and ACTRA AI provisions. Streaming and studio AI disclosure guidelines.</span>
+</footer>
+</div>
+
+<script>
+// 2 = built in, 1 = partner / plug in / separate app, 0 = none found. Each note is the feature name.
+const COLS=[["tt","Transcribe and translate"],["dc","Dialogue clean up and voice"],["gen","Generate or extend footage"],["roto","Auto masking and roto"],["up","Upscale, retime, denoise"],["dub","Dubbing and lip sync"]];
+const ROWS=[
+ ["g","Picture edit"],
+ ["Avid Media Composer",[1,0,0,0,0,0],{tt:"Transcript tools in app, translation through partners"}],
+ ["Adobe Premiere Pro",[2,2,2,2,1,1],{tt:"Speech to text and caption translation",dc:"Enhance Speech",gen:"Generative Extend",roto:"Object Mask",up:"Third party plug ins",dub:"Adobe's separate Firefly tools"}],
+ ["DaVinci Resolve Studio",[2,2,0,2,2,1],{tt:"Transcription and subtitle tools",dc:"Voice Isolation, Dialogue Leveler",roto:"Magic Mask",up:"Super Scale, Speed Warp, noise reduction",dub:"Voice conversion tools"}],
+ ["Final Cut Pro",[1,2,0,2,0,0],{tt:"Transcribe to captions",dc:"Voice Isolation",roto:"Magnetic Mask"}],
+ ["g","Sound"],
+ ["Pro Tools",[0,1,0,0,0,0],{dc:"Mostly through plug ins"}],
+ ["iZotope RX",[0,2,0,0,0,0],{dc:"Dialogue Isolate, De-reverb"}],
+ ["g","Visual effects"],
+ ["Foundry Nuke",[0,0,1,2,1,0],{gen:"Community ML models",roto:"CopyCat and ML tools",up:"ML models"}],
+ ["Autodesk Flame",[0,0,0,2,2,0],{roto:"ML extraction of people, sky, depth",up:"ML Timewarp"}],
+ ["After Effects",[0,0,1,2,0,0],{gen:"Firefly in sibling Adobe apps",roto:"Roto Brush 3"}],
+ ["g","Generative and localization"],
+ ["Runway",[0,0,2,2,2,0],{gen:"Video generation",roto:"Background removal",up:"Video upscale"}],
+ ["Adobe Firefly",[1,0,2,0,0,2],{gen:"Video and image generation",dub:"Translate audio and video",tt:"Captions"}],
+ ["ElevenLabs",[2,2,0,0,0,2],{tt:"Speech to text",dc:"Voice Isolator",dub:"Dubbing Studio"}],
+ ["Flawless AI",[0,0,0,0,0,2],{dub:"Visual dubbing"}],
+ ["Topaz Video AI",[0,0,0,0,2,0],{up:"AI upscale and frame rate"}]
+];
+const LABEL={2:"Built in",1:"Partner or separate app",0:"None found"};
+const tbl=document.getElementById("matrix");
+let h="<thead><tr><th>Software</th>"+COLS.map(c=>"<th>"+c[1]+"</th>").join("")+"<th>Jobs covered</th></tr></thead><tbody>";
+const tools=ROWS.filter(r=>r[0]!=="g");
+ROWS.forEach(r=>{
+  if(r[0]==="g"){h+='<tr class="group"><td colspan="8">'+r[1]+"</td></tr>";return;}
+  const [name,v,n]=r;
+  h+="<tr><td>"+name+"</td>"+v.map((x,i)=>{
+    const note=n[COLS[i][0]]||LABEL[x];
+    const cls=x===2?"full":x===1?"half":"";
+    return '<td><i class="dot '+cls+'" role="img" aria-label="'+LABEL[x]+': '+note+'" title="'+LABEL[x]+': '+note+'"></i></td>';
+  }).join("")+'<td class="score">'+v.filter(x=>x===2).length+" of 6</td></tr>";
+});
+tbl.innerHTML=h+"</tbody>";
+const N=tools.length;
+document.getElementById("bars").innerHTML=COLS.map((c,i)=>{
+  const k=tools.filter(r=>r[1][i]===2).length;
+  return '<div class="bar"><span>'+c[1]+'</span><div class="track"><div class="fill" style="width:'+(k/N*100)+'%"></div></div><span class="n">'+k+" of "+N+"</span></div>";
+}).join("");
+document.getElementById("barnote").textContent="Counted from the "+N+" tools in the table above. This is a sample of common tools, not the whole market.";
+</script>
