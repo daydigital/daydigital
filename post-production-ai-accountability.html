@@ -113,6 +113,9 @@ tr.group td{background:var(--bg);font-family:var(--mono);font-size:11px;letter-s
 .note{font-size:13px;color:var(--muted)}
 .chart.dense,.xl.dense{gap:8px}
 .flow.wide{grid-template-columns:minmax(150px,260px) 1fr 48px}
+blockquote.pull{margin:0;padding:4px 0 4px 16px;border-left:3px solid var(--amber);font-size:18px;max-width:70ch}
+blockquote.pull cite{display:block;margin-top:8px;font-family:var(--mono);font-size:12px;font-style:normal;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+a{color:var(--teal)}
 h3.sub{font-size:26px;border-top:1px solid var(--line);padding-top:24px}
 @media (max-width:860px){.cols{grid-template-columns:1fr}.flow{grid-template-columns:1fr 44px}.flow .t{grid-column:1 / -1;order:3}}
 footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
@@ -286,10 +289,72 @@ footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:
   </div>
   <p class="tc">Source: Directors Guild of Canada, National Member Services</p>
 </section>
-<section class="stack" aria-labelledby="r3">
+<section class="stack" aria-labelledby="rs">
   <div class="reelhead">
-    <div class="row"><span class="tc">Reel 4 · TC 01:30:00:00</span><span class="tc">How it arrived</span></div>
-    <h2 id="r3">The quiet years, then the fast ones</h2>
+    <div class="row"><span class="tc">Reel 4 · TC 01:30:00:00</span><span class="tc">Avid and ACE survey, Oct 2026</span></div>
+    <h2 id="rs">What working editors say</h2>
+    <p class="lede">120 members of American Cinema Editors answered 17 questions about AI in post. Most already use it. They welcome it for the work around the edit and want it kept away from authorship.</p>
+  </div>
+  <div class="panel stack">
+    <div class="stat">
+      <div><b>77.5%</b><span>already use AI in their work (93 of 120)</span></div>
+      <div><b>70.8%</b><span>of the 65 who use it monthly or more say it made them faster</span></div>
+      <div><b>27.5%</b><span>use generative images or video</span></div>
+      <div><b>49.2%</b><span>name ethics, copyright or security as the biggest barrier</span></div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="panel">
+      <h3>What editors use AI for today</h3>
+      <div class="flow" role="img" aria-label="Share of 120 editors using AI for: transcription 60.0 percent, audio cleanup 55.0, search 39.2, generative images or video 27.5">
+        <span>Transcription</span><div class="t"><i style="width:60%"></i></div><span class="n">60%</span>
+        <span>Audio cleanup</span><div class="t"><i style="width:55%"></i></div><span class="n">55%</span>
+        <span>Search</span><div class="t"><i style="width:39.2%"></i></div><span class="n">39%</span>
+        <span>Generative images or video</span><div class="t out"><i style="width:27.5%"></i></div><span class="n">28%</span>
+      </div>
+      <p class="note">Editors could pick more than one answer. Bars run from 0 to 100 percent of all 120.</p>
+    </div>
+    <div class="panel">
+      <h3>Biggest barrier to adoption</h3>
+      <div class="flow" role="img" aria-label="Biggest barrier: ethics, copyright and security 49.2 percent. Tools that do not integrate well 15.0 percent. Creative quality, trust in results and lack of clear benefit each 13.3 percent or less.">
+        <span>Ethics, copyright, security</span><div class="t"><i style="width:49.2%"></i></div><span class="n">49%</span>
+        <span>Tools that don't integrate</span><div class="t"><i style="width:15%"></i></div><span class="n">15%</span>
+        <span>Each of the next three, at most</span><div class="t"><i style="width:13.3%"></i></div><span class="n">13%</span>
+      </div>
+      <p class="note">The next three are creative quality, trust in results and lack of clear benefit.</p>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="panel">
+      <h3>Has AI made you faster?</h3>
+      <div class="flow" role="img" aria-label="Share saying AI made them faster, by how often they use it: daily or weekly 76.2 percent, monthly 60.9, rarely or never 18.2">
+        <span>Use it daily or weekly</span><div class="t"><i style="width:76.2%"></i></div><span class="n">76%</span>
+        <span>Use it monthly</span><div class="t"><i style="width:60.9%"></i></div><span class="n">61%</span>
+        <span>Rarely or never</span><div class="t"><i style="width:18.2%"></i></div><span class="n">18%</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>AI should enhance, not replace, creative intent</h3>
+      <div class="flow" role="img" aria-label="Share who agree: daily or weekly users 98 percent, all editors 86.7, rarely or never 78">
+        <span>Use it daily or weekly</span><div class="t"><i style="width:98%"></i></div><span class="n">98%</span>
+        <span>All editors</span><div class="t"><i style="width:86.7%"></i></div><span class="n">87%</span>
+        <span>Rarely or never</span><div class="t"><i style="width:78%"></i></div><span class="n">78%</span>
+      </div>
+      <p class="note">The editors who use AI the most draw the line the hardest.</p>
+    </div>
+  </div>
+  <div class="panel stack">
+    <h3>Read across to the accountability question</h3>
+    <blockquote class="pull">“How, when using integrated tech, do we trust that the AI companies are not using our daily work to train in order to develop technology that will one day try to replace working post professionals?”<cite>Editor, in the Avid and ACE survey</cite></blockquote>
+    <p>67.5% say it matters that AI is built into the tools they already use, and 63.3% want tighter integration. Built in AI is also the hardest to see. The same editors name data, copyright and ethics as their top worry. That puts the accountability question inside the timeline.</p>
+    <p class="note">Source: Avid, “Everything But the Cut”, October 16, 2026, from a Q2 2026 survey of 120 ACE members run by Avid with ACE. Avid sells Media Composer, the respondents chose to answer, and ACE members are mostly American, so the DGC figures in Reel 3 describe a different group. Avid also publishes a longer <a href="https://images.avid.com/avidcom/PDFs/AI_in_Post_By_The_Numbers-final.pdf">By the Numbers report</a>.</p>
+  </div>
+</section>
+
+<section class="stack" aria-labelledby="r5">
+  <div class="reelhead">
+    <div class="row"><span class="tc">Reel 5 · TC 01:40:00:00</span><span class="tc">How it arrived</span></div>
+    <h2 id="r5">The quiet years, then the fast ones</h2>
   </div>
   <div class="panel tl">
     <div class="ev"><span class="yr">2019</span><span class="mk"><i></i></span><div><span class="tag">Tool</span><br><b>DaVinci Resolve 16</b> adds a neural engine for face and object tools inside a colour and edit suite.</div></div>
@@ -305,7 +370,7 @@ footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:
 <!-- REEL 4 -->
 <section class="stack" aria-labelledby="r4">
   <div class="reelhead">
-    <div class="row"><span class="tc">Reel 5 · TC 01:40:00:00</span><span class="tc">The open question</span></div>
+    <div class="row"><span class="tc">Reel 6 · TC 01:50:00:00</span><span class="tc">The open question</span></div>
     <h2 id="r4">Where accountability goes missing</h2>
     <p class="lede">A feature is one click inside a tool the artist already trusts. Follow the shot downstream and see who can know.</p>
   </div>
