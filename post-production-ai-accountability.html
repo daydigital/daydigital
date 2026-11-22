@@ -7,6 +7,7 @@
   --bg:#eceff2; --surface:#ffffff; --ink:#12161b; --muted:#566170; --line:#d2d8df;
   --amber:#b05f00; --amber-soft:#f6e3c8; --teal:#0b6f78; --teal-soft:#cfe9ea;
   --gap:#c9372c;
+  --l1:#4a6a8a; --l2:#3f7d8c; --l3:#3e8c7a; --l4:#7f9332; --l5:#c0832a; --l6:#b05f00;
   --display:"Barlow Condensed","Arial Narrow",sans-serif;
   --body:"Barlow",system-ui,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,monospace;
@@ -14,10 +15,12 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0d1014; --surface:#151a21; --ink:#e9edf1; --muted:#9aa5b3; --line:#2b333d;
   --amber:#f2a33a; --amber-soft:#3a2a12; --teal:#4cc3cc; --teal-soft:#10353a; --gap:#ff6b5e;
+  --l1:#7fa3c7; --l2:#6bb7c7; --l3:#6bc4a8; --l4:#b5cc5e; --l5:#e9a94a; --l6:#f2a33a;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0d1014; --surface:#151a21; --ink:#e9edf1; --muted:#9aa5b3; --line:#2b333d;
   --amber:#f2a33a; --amber-soft:#3a2a12; --teal:#4cc3cc; --teal-soft:#10353a; --gap:#ff6b5e;
+  --l1:#7fa3c7; --l2:#6bb7c7; --l3:#6bc4a8; --l4:#b5cc5e; --l5:#e9a94a; --l6:#f2a33a;
   color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
@@ -118,6 +121,46 @@ blockquote.pull cite{display:block;margin-top:8px;font-family:var(--mono);font-s
 a{color:var(--teal)}
 h3.sub{font-size:26px;border-top:1px solid var(--line);padding-top:24px}
 @media (max-width:860px){.cols{grid-template-columns:1fr}.flow{grid-template-columns:1fr 44px}.flow .t{grid-column:1 / -1;order:3}}
+/* layers reel */
+.lx-grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:20px;align-items:start}
+.lx-stackwrap{display:grid;grid-template-columns:1fr 54px;gap:12px;position:sticky;top:12px}
+.lx-layers{display:flex;flex-direction:column;gap:8px;list-style:none;margin:0;padding:0}
+.lx-layers button{all:unset;box-sizing:border-box;width:100%;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-left:10px solid var(--c);border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.lx-layers button:hover{border-color:var(--c)}
+.lx-layers button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.lx-layers button[aria-pressed="true"]{background:var(--bg);border-color:var(--c);box-shadow:inset 0 0 0 2px var(--c)}
+.lx-layers .nm{font-family:var(--display);font-weight:700;font-size:24px;text-transform:uppercase;letter-spacing:.02em}
+.lx-layers .kw{font-size:13px;color:var(--muted)}
+.lx-axis{display:flex;flex-direction:column;align-items:center;justify-content:space-between;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.lx-axis .ln{flex:1;width:2px;background:linear-gradient(to top,var(--l1),var(--l6));margin:8px 0;position:relative}
+.lx-axis .ln::after{content:"";position:absolute;top:-2px;left:-5px;border:6px solid transparent;border-bottom:9px solid var(--l6);border-top:0}
+.lx-axis span{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
+.lx-detail{background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--c);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:18px}
+.lx-detail h3{font-size:18px;color:var(--muted);letter-spacing:.04em}
+.lx-blk{display:flex;flex-direction:column;gap:6px}
+.lx-blk p{font-size:15px}
+.lx-aq{border-left:3px solid var(--amber);padding-left:12px}
+.lx-aq p{font-size:17px;font-weight:500}
+.lx-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.lx-tool{border:1px solid var(--line);border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0;background:var(--bg)}
+.lx-tool b{font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+.lx-tool .d{font-size:14px}
+.lx-tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);padding:1px 6px;border-radius:3px;color:var(--muted);width:fit-content}
+.lx-tag.ship{border-color:var(--teal);color:var(--teal)}
+.lx-tag.beta{border-color:var(--amber);color:var(--amber)}
+.lx-tag.unc{border-style:dashed}
+.srcs{font-size:13px;color:var(--muted)}
+.srcs ul{margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:2px}
+@media (max-width:900px){.lx-grid{grid-template-columns:1fr}.lx-stackwrap{position:static}.lx-tools{grid-template-columns:1fr}}
+/* legal reel */
+table.lg{min-width:940px}
+table.lg th,table.lg td{text-align:left;vertical-align:top;font-size:14px}
+table.lg td:first-child{white-space:normal;min-width:190px;font-size:17px}
+.lgst{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);border-radius:3px;padding:1px 6px;margin-bottom:4px;color:var(--muted)}
+.lgst.set{border-color:var(--teal);color:var(--teal)}
+.lgst.rul{border-color:var(--ink);color:var(--ink)}
+.lgst.pen{border-color:var(--amber);color:var(--amber);border-style:dashed}
+
 footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 @media (max-width:860px){
   .pipe,.chain{grid-template-columns:1fr}
@@ -181,9 +224,45 @@ footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:
 </section>
 
 <!-- REEL 3 -->
+<section class="stack" aria-labelledby="rlx">
+  <div class="reelhead">
+    <div class="row"><span class="tc">Reel 3 · TC 01:20:00:00</span><span class="tc">The levels of AI</span></div>
+    <h2 id="rlx">Layers of AI in post production</h2>
+    <p class="lede">Each layer sits on the one below it. Tap a layer to see the professional tools using it right now, what they do, and what could come next.</p>
+  </div>
+  <p class="banner"><b>Checked, but confirm before you quote.</b> Tool details come from trade press and vendor announcements through November 2026. Each tool carries a status tag: Shipping, Beta, Preview or Single source. Confirm the version number against the vendor's own release notes.</p>
+  <div class="lx-grid">
+    <div class="lx-stackwrap">
+      <ol class="lx-layers" id="lx-layers" aria-label="Layers of AI, newest at the top"></ol>
+      <div class="lx-axis" aria-hidden="true"><span>Newer, less traceable</span><div class="ln"></div><span>Older, easier to audit</span></div>
+    </div>
+    <article class="lx-detail" id="lx-detail" aria-live="polite"></article>
+  </div>
+  <div class="panel stack">
+    <h3>What the stack shows</h3>
+    <p>The lower layers follow rules a person wrote, so every step can be checked. The upper layers make probable guesses and are built from data nobody on the project saw. The higher the layer, the harder it is to say who decided what.</p>
+    <p>The oldest layer can also help. Adobe stamps Generative Extend results with Content Credentials, and Netflix asks production partners to tell it before they use generative AI. Put those two ideas together and disclosure could be checked automatically before a show ships.</p>
+  </div>
+  <div class="srcs">
+    <span class="tc">Sources for this reel</span>
+    <ul>
+      <li><a href="https://helpx.adobe.com/au/premiere-pro/using/whats-new/2025-2.html" target="_blank" rel="noopener">Adobe, Premiere Pro feature summary (April 2025 release)</a></li>
+      <li><a href="https://blog.adobe.com/en/publish/2026/09/08/generate-create-directly-in-your-timeline-with-new-ai-powered-innovations-in-premiere-after-effects" target="_blank" rel="noopener">Adobe, AI innovations in Premiere and After Effects (September 2026)</a></li>
+      <li><a href="https://www.creativebloq.com/news/adobe-premiere-pro-is-getting-an-ai-agent-to-do-the-boring-editing-jobs" target="_blank" rel="noopener">Creative Bloq, Premiere Pro AI agent</a></li>
+      <li><a href="https://www.newsshooter.com/2026/06/02/davinci-resolve-21-final-release/" target="_blank" rel="noopener">Newsshooter, DaVinci Resolve 21 final release</a> and <a href="https://www.broadcastnow.co.uk/post-and-vfx/blackmagic-adds-ai-search-and-voice-creation-in-davinci-resolve-21/5216037.article" target="_blank" rel="noopener">Broadcast, AI search and voice creation in Resolve 21</a></li>
+      <li><a href="https://www.avid.com/press-room/2026/08/avid-shows-the-future-of-agentic-editing-at-ibc2026" target="_blank" rel="noopener">Avid, agentic editing at IBC 2026</a> and <a href="https://www.tvtechnology.com/production/avid-and-google-cloud-partner-on-delivering-agentic-ai-to-media-production" target="_blank" rel="noopener">TV Technology, Avid and Google Cloud</a></li>
+      <li><a href="https://audioxpress.com/news/avid-expands-pro-tools-with-new-extensions-framework-local-ai-stem-separation-and-mpe-support" target="_blank" rel="noopener">audioXpress, Pro Tools extensions and local AI stem separation</a></li>
+      <li><a href="https://www.cgchannel.com/2026/11/autodesk-releases-flame-2027/" target="_blank" rel="noopener">CG Channel, Autodesk Flame 2027.2</a></li>
+      <li><a href="https://www.foundry.com/news-and-awards/foundry-releases-nuke-17-advancing-compositing-workflows" target="_blank" rel="noopener">Foundry, Nuke 17 release</a></li>
+      <li><a href="https://www.thewrap.com/netflix-generative-ai-use-content-production-guidelines/" target="_blank" rel="noopener">TheWrap, Netflix generative AI guidelines</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- REEL 4 -->
 <section class="stack" aria-labelledby="r3">
   <div class="reelhead">
-    <div class="row"><span class="tc">Reel 3 · TC 01:20:00:00</span><span class="tc">Directors Guild of Canada figures</span></div>
+    <div class="row"><span class="tc">Reel 4 · TC 01:30:00:00</span><span class="tc">Directors Guild of Canada figures</span></div>
     <h2 id="r3">The people in the edit room</h2>
     <p class="lede">Editing here means picture editing and sound editing together. Fewer productions are hiring editors while the number of members working as editors keeps rising.</p>
   </div>
@@ -291,7 +370,7 @@ footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:
 </section>
 <section class="stack" aria-labelledby="rs">
   <div class="reelhead">
-    <div class="row"><span class="tc">Reel 4 · TC 01:30:00:00</span><span class="tc">Avid and ACE survey, Oct 2026</span></div>
+    <div class="row"><span class="tc">Reel 5 · TC 01:40:00:00</span><span class="tc">Avid and ACE survey, Oct 2026</span></div>
     <h2 id="rs">What working editors say</h2>
     <p class="lede">120 members of American Cinema Editors answered 17 questions about AI in post. Most already use it. They welcome it for the work around the edit and want it kept away from authorship.</p>
   </div>
@@ -347,13 +426,13 @@ footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:
     <h3>Read across to the accountability question</h3>
     <blockquote class="pull">“How, when using integrated tech, do we trust that the AI companies are not using our daily work to train in order to develop technology that will one day try to replace working post professionals?”<cite>Editor, in the Avid and ACE survey</cite></blockquote>
     <p>67.5% say it matters that AI is built into the tools they already use, and 63.3% want tighter integration. Built in AI is also the hardest to see. The same editors name data, copyright and ethics as their top worry. That puts the accountability question inside the timeline.</p>
-    <p class="note">Source: Avid, “Everything But the Cut”, October 16, 2026, from a Q2 2026 survey of 120 ACE members run by Avid with ACE. Avid sells Media Composer, the respondents chose to answer, and ACE members are mostly American, so the DGC figures in Reel 3 describe a different group. Avid also publishes a longer <a href="https://images.avid.com/avidcom/PDFs/AI_in_Post_By_The_Numbers-final.pdf">By the Numbers report</a>.</p>
+    <p class="note">Source: Avid, “Everything But the Cut”, October 16, 2026, from a Q2 2026 survey of 120 ACE members run by Avid with ACE. Avid sells Media Composer, the respondents chose to answer, and ACE members are mostly American, so the DGC figures in Reel 4 describe a different group. Avid also publishes a longer <a href="https://images.avid.com/avidcom/PDFs/AI_in_Post_By_The_Numbers-final.pdf">By the Numbers report</a>.</p>
   </div>
 </section>
 
 <section class="stack" aria-labelledby="r5">
   <div class="reelhead">
-    <div class="row"><span class="tc">Reel 5 · TC 01:40:00:00</span><span class="tc">How it arrived</span></div>
+    <div class="row"><span class="tc">Reel 6 · TC 01:50:00:00</span><span class="tc">How it arrived</span></div>
     <h2 id="r5">The quiet years, then the fast ones</h2>
   </div>
   <div class="panel tl">
@@ -367,10 +446,85 @@ footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:
   <p class="tc">Check each date and wording against the original announcement before publishing.</p>
 </section>
 
-<!-- REEL 4 -->
+<!-- REEL 7 -->
+<section class="stack" aria-labelledby="rlg">
+  <div class="reelhead">
+    <div class="row"><span class="tc">Reel 7 · TC 02:00:00:00</span><span class="tc">The courtrooms</span></div>
+    <h2 id="rlg">Who gets paid for the work the models learned from</h2>
+    <p class="lede">Authors, artists, studios, publishers and musicians are suing AI companies over what the models were trained on and what they produce. Courts have not agreed with each other. Only one big case has produced payments so far.</p>
+  </div>
+  <p class="banner"><b>Status as of late November 2026, from press reports.</b> This is a summary for a report, not legal advice. Cases move quickly, so confirm each one on the court docket or with a lawyer before you quote it.</p>
+
+  <div class="panel stack">
+    <div class="stat">
+      <div><b>$1.5B</b><span>Anthropic settlement with authors, final approval July 2026</span></div>
+      <div><b>70+</b><span>suits filed by copyright owners against AI companies by the end of 2025</span></div>
+      <div><b>3</b><span>major studios suing Midjourney: Disney, Universal, Warner Bros. Discovery</span></div>
+      <div><b>Nov 13</b><span>Ontario Court of Appeal lets the news publishers' case against OpenAI go ahead</span></div>
+    </div>
+  </div>
+
+  <div class="panel stack">
+    <h3>The cases, by region</h3>
+    <div class="scroll">
+    <table class="lg">
+      <thead><tr><th>Case</th><th>Who is suing</th><th>What it is about</th><th>Where it stands</th></tr></thead>
+      <tbody>
+        <tr class="group"><td colspan="4">United States</td></tr>
+        <tr><td>Bartz v. Anthropic</td><td>Authors</td><td>Books used to train an AI model</td><td><span class="lgst set">Settled</span><br>A judge held that training on lawfully bought books was fair use and that downloading pirated copies was not. The case settled for $1.5 billion, with final approval in July 2026. About $3,000 per book, with first payments due the week of November 23, 2026 and more through September 2027.</td></tr>
+        <tr><td>Kadrey v. Meta</td><td>Authors</td><td>Books used to train Meta's models</td><td><span class="lgst rul">Ruled</span><br>Training was held fair use on that record because the authors showed no market harm. Claims about piracy continue. No appeal decision yet.</td></tr>
+        <tr><td>Thomson Reuters v. Ross Intelligence</td><td>Legal publisher</td><td>Copying Westlaw headnotes to train a legal research tool</td><td><span class="lgst rul">Ruled</span><br>The Third Circuit ruled on September 29, 2026 that this was not fair use. The court noted that Ross's AI was not generative. Ross says it will seek Supreme Court review.</td></tr>
+        <tr><td>New York Times and other news publishers v. OpenAI and Microsoft</td><td>Newspapers</td><td>Training on articles, and what the chatbot outputs</td><td><span class="lgst pen">Pending</span><br>Summary judgment motions were argued in October 2026. I found no trial date. In September 2026 the US Justice Department filed a statement saying training should not expose developers to broad liability.</td></tr>
+        <tr><td>Disney and Universal v. Midjourney, and Warner Bros. Discovery v. Midjourney</td><td>Film studios</td><td>Training on their films, and images of their characters</td><td><span class="lgst pen">Pending</span><br>Midjourney says fair use. In July 2026 it asked for discovery into the studios' own use of AI. I found no ruling.</td></tr>
+        <tr><td>Andersen v. Stability AI, Midjourney, Runway and DeviantArt</td><td>Visual artists</td><td>Image models trained on artists' work</td><td><span class="lgst pen">Pending</span><br>A January 2026 filing lists a trial for April 5, 2027. Sources disagree on some dates.</td></tr>
+        <tr><td>Lehrman v. Lovo</td><td>Voice actors</td><td>Cloned voices sold as AI voiceover</td><td><span class="lgst rul">Ruled</span><br>In July 2025 a judge let contract and right of publicity claims go ahead and dismissed most copyright and trademark claims. Commentators read it as pointing performers toward state law.</td></tr>
+        <tr class="group"><td colspan="4">Canada</td></tr>
+        <tr><td>News publishers v. OpenAI</td><td>Canadian Press, Torstar, The Globe and Mail, Postmedia, CBC/Radio-Canada</td><td>News content used to train ChatGPT without permission or payment</td><td><span class="lgst rul">Ruled</span><br>Ontario's Superior Court kept the case in Ontario in November 2025. The Court of Appeal dismissed OpenAI's appeal on November 13, 2026. Coverage calls it the first Canadian case on training generative AI. The same publishers have also sued Anthropic.</td></tr>
+        <tr class="group"><td colspan="4">United Kingdom and Europe</td></tr>
+        <tr><td>Getty Images v. Stability AI</td><td>Photo agency</td><td>Images used to train an image model</td><td><span class="lgst rul">Ruled</span><br>The UK High Court ruled on November 4, 2025. Getty won a narrow trademark point. Commentary says the court found no copyright infringement because the model did not store the images.</td></tr>
+        <tr><td>GEMA v. OpenAI</td><td>German music rights society</td><td>Song lyrics reproduced in outputs</td><td><span class="lgst rul">Ruled</span><br>A Munich court largely upheld GEMA's claims on November 11, 2025, including damages. Under appeal.</td></tr>
+        <tr><td>GEMA v. Suno</td><td>German music rights society</td><td>Music used to train an AI music generator</td><td><span class="lgst rul">Ruled</span><br>A Munich court largely upheld GEMA's claims on July 31, 2026. Commentary says it found infringement in both training and outputs.</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Status tags: Settled means money is changing hands. Ruled means a court has decided something, which may still be appealed. Pending means no decision on the main question.</p>
+  </div>
+
+  <div class="cols">
+    <div class="panel stack">
+      <h3>What the pattern says</h3>
+      <p>The fight is about two things: what the model was trained on, and what it produces. In the US, two judges so far have treated training on lawfully obtained books as fair use, while piracy and copying a rival product for a competing tool have gone the other way. Courts in Germany have sided more often with rights holders, and the UK ruling went the other way on whether a model stores images.</p>
+      <p>Money has moved in one large case I found, the Anthropic settlement, and that was about pirated books. Disney and OpenAI announced a licensing deal for Sora in December 2025, and it ended in March 2026 when OpenAI shut Sora down. Reuters reported that no money had changed hands.</p>
+    </div>
+    <div class="panel stack">
+      <h3>The gap for people in post</h3>
+      <p>Nearly all of these cases are brought by authors, artists, publishers, studios and musicians. Editors, sound editors and VFX artists usually do not own the copyright in what they cut or build, since it commonly belongs to the production company. So the people closest to the tools may not be parties in any of these cases.</p>
+      <p class="note">Ask a Canadian entertainment lawyer how ownership works in your own contracts before you state this in the report.</p>
+    </div>
+  </div>
+
+  <div class="srcs">
+    <span class="tc">Sources for this reel</span>
+    <ul>
+      <li><a href="https://copyrightalliance.org/ai-copyright-lawsuit-developments-2025/" target="_blank" rel="noopener">Copyright Alliance, AI copyright lawsuit developments in 2025</a></li>
+      <li><a href="https://news.bloomberglaw.com/ip-law/anthropic-authors-1-5-billion-deal-receives-final-approval" target="_blank" rel="noopener">Bloomberg Law, Anthropic settlement final approval</a> and <a href="https://www.authorsguild.org/advocacy/artificial-intelligence/what-authors-need-to-know-about-the-anthropic-settlement/" target="_blank" rel="noopener">Authors Guild, what authors need to know</a></li>
+      <li><a href="https://www.polsinelli.com/melenie-van/publications/ai-vs-authors-update-court-approves-historic-anthropic-settlement-while-meta-litigation-continues" target="_blank" rel="noopener">Polsinelli, Anthropic settlement and Meta litigation</a></li>
+      <li><a href="https://www.lawnext.com/2026/09/3rd-circuit-rules-for-thomson-reuters-in-its-copyright-fight-against-legal-research-startup-ross.html" target="_blank" rel="noopener">LawNext, Third Circuit rules for Thomson Reuters</a></li>
+      <li><a href="https://news.bgov.com/ip-law/new-york-times-narrows-openai-suit-targets-microsofts-conduct" target="_blank" rel="noopener">Bloomberg Law, New York Times narrows OpenAI suit</a></li>
+      <li><a href="https://www.thewrap.com/warner-bros-midjourney-lawsuit/" target="_blank" rel="noopener">TheWrap, Warner Bros. sues Midjourney</a> and <a href="https://www.theartnewspaper.com/2026/07/09/midjourney-demands-hollywood-AI-secrets" target="_blank" rel="noopener">The Art Newspaper, Midjourney demands Hollywood's AI secrets</a></li>
+      <li><a href="https://chatgptiseatingtheworld.com/2026/02/03/sarah-andersens-copyright-lawsuit-the-1st-filed-v-ai-companies-gets-pushed-back-again-at-her-request/" target="_blank" rel="noopener">Andersen v. Stability AI schedule update</a></li>
+      <li><a href="https://news.bloomberglaw.com/ip-law/voice-actors-advance-some-claims-in-ai-voiceover-copyright-suit" target="_blank" rel="noopener">Bloomberg Law, voice actors advance some claims against Lovo</a></li>
+      <li><a href="https://www.cp24.com/news/canada/2026/11/13/court-allows-news-publishers-copyright-lawsuit-against-openai-to-go-ahead/" target="_blank" rel="noopener">Canadian Press via CP24, court allows publishers' lawsuit against OpenAI</a></li>
+      <li><a href="https://www.osler.com/en/insights/updates/german-and-u-k-courts-diverge-on-whether-ai-models-infringe-copyright/" target="_blank" rel="noopener">Osler, German and UK courts diverge</a> and <a href="https://www.simmons-simmons.com/en/publications/cmszvaaz6003oug849s2sqawl/gema-v-suno-ai-key-eu-decision-on-ai-training-outputs-and-copyright" target="_blank" rel="noopener">Simmons and Simmons, GEMA v Suno</a></li>
+      <li><a href="https://www.thewrap.com/industry-news/business/openai-sora-video-app-shutting-down/" target="_blank" rel="noopener">TheWrap, Disney ends OpenAI partnership after Sora shuts down</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- REEL 8 -->
 <section class="stack" aria-labelledby="r4">
   <div class="reelhead">
-    <div class="row"><span class="tc">Reel 6 · TC 01:50:00:00</span><span class="tc">The open question</span></div>
+    <div class="row"><span class="tc">Reel 8 · TC 02:10:00:00</span><span class="tc">The open question</span></div>
     <h2 id="r4">Where accountability goes missing</h2>
     <p class="lede">A feature is one click inside a tool the artist already trusts. Follow the shot downstream and see who can know.</p>
   </div>
@@ -398,7 +552,7 @@ footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:
 
 <footer>
   <span class="tc">Sources to collect before publishing</span>
-  <span>Directors Guild of Canada member counts (Reel 3), still awaiting the department breakdown. Vendor release notes for each tool in Reel 2. Original announcements for each date in Reel 3. Current WGA, SAG AFTRA, DGA and ACTRA AI provisions. Streaming and studio AI disclosure guidelines.</span>
+  <span>Directors Guild of Canada member counts (Reel 4), still awaiting the department breakdown. Vendor release notes for each tool in Reel 2. Original announcements for each date in Reel 3. Current WGA, SAG AFTRA, DGA and ACTRA AI provisions. Streaming and studio AI disclosure guidelines.</span>
 </footer>
 </div>
 
@@ -407,12 +561,12 @@ footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:
 const COLS=[["tt","Transcribe and translate"],["dc","Dialogue clean up and voice"],["gen","Generate or extend footage"],["roto","Auto masking and roto"],["up","Upscale, retime, denoise"],["dub","Dubbing and lip sync"]];
 const ROWS=[
  ["g","Picture edit"],
- ["Avid Media Composer",[1,0,0,0,0,0],{tt:"Transcript tools in app, translation through partners"}],
+ ["Avid Media Composer",[1,0,0,0,0,1],{tt:"Transcript tools in app, translation through partners",dub:"Flawless as an AI extension. A Gemini panel was shown as a preview in 2026.8"}],
  ["Adobe Premiere Pro",[2,2,2,2,1,1],{tt:"Speech to text and caption translation",dc:"Enhance Speech",gen:"Generative Extend",roto:"Object Mask",up:"Third party plug ins",dub:"Adobe's separate Firefly tools"}],
- ["DaVinci Resolve Studio",[2,2,0,2,2,1],{tt:"Transcription and subtitle tools",dc:"Voice Isolation, Dialogue Leveler",roto:"Magic Mask",up:"Super Scale, Speed Warp, noise reduction",dub:"Voice conversion tools"}],
+ ["DaVinci Resolve Studio",[2,2,0,2,2,1],{tt:"Transcription and subtitle tools",dc:"Voice Isolation, Dialogue Leveler",roto:"Magic Mask",up:"Super Scale, Speed Warp, noise reduction",dub:"AI Speech Generator in Resolve 21"}],
  ["Final Cut Pro",[1,2,0,2,0,0],{tt:"Transcribe to captions",dc:"Voice Isolation",roto:"Magnetic Mask"}],
  ["g","Sound"],
- ["Pro Tools",[0,1,0,0,0,0],{dc:"Mostly through plug ins"}],
+ ["Pro Tools",[2,2,0,0,0,0],{tt:"Speech to text analysis",dc:"AI Stem Separator, reported to run locally"}],
  ["iZotope RX",[0,2,0,0,0,0],{dc:"Dialogue Isolate, De-reverb"}],
  ["g","Visual effects"],
  ["Foundry Nuke",[0,0,1,2,1,0],{gen:"Community ML models",roto:"CopyCat and ML tools",up:"ML models"}],
@@ -445,4 +599,91 @@ document.getElementById("bars").innerHTML=COLS.map((c,i)=>{
   return '<div class="bar"><span>'+c[1]+'</span><div class="track"><div class="fill" style="width:'+(k/N*100)+'%"></div></div><span class="n">'+k+" of "+N+"</span></div>";
 }).join("");
 document.getElementById("barnote").textContent="Counted from the "+N+" tools in the table above. This is a sample of common tools, not the whole market.";
+</script>
+<script>
+const S={ship:["Shipping","ship"],beta:["Beta","beta"],prev:["Preview","beta"],unc:["Single source","unc"]};
+const L=[
+ {n:"Agentic AI",c:"--l6",kw:"Memory, planning, tool use, autonomous execution",
+  today:"Real but early. A person types a request and the software carries out several steps inside the open project. Today that is mostly housekeeping and rough assembly, not finished editing.",
+  tools:[
+   {t:"Adobe Premiere AI Assistant",s:"beta",d:"A chat panel that carries out tasks inside an open project. Early users report organizing assets and adding markers."},
+   {t:"After Effects AI Assistant",s:"beta",d:"Announced September 8, 2026. Handles project wide organizing and technical tasks from plain language instructions."},
+   {t:"Avid Media Composer with Gemini",s:"prev",d:"A Google Gemini panel shown with Media Composer 2026.8 at IBC 2026. Aimed at finding media and building rough cuts. Part of a multi year Avid and Google Cloud partnership."},
+   {t:"DaVinci Resolve Studio",s:"unc",d:"One source reports an MCP server that lets a chat assistant run multi step tasks in a project. I could not confirm it with a second source."},
+   {t:"Eddie AI and invideo",s:"ship",d:"Third party assistants that work on footage and hand the result to Premiere, Resolve or Final Cut Pro."}],
+  world:"United States: Adobe and Avid with Google Cloud. Australia: Blackmagic Design, maker of Resolve. No independent tests on real professional projects turned up.",
+  next:"An agent that conforms a cut, makes subtitles and dubs in twenty languages, checks quality and delivers overnight, with a person signing off at the end.",
+  q:"Who approved the steps nobody watched, and is there a log a person can read?"},
+ {n:"Generative AI",c:"--l5",kw:"LLMs, diffusion models, multimodal models, VAEs",
+  today:"Making new picture, sound and text that was never shot or recorded: extending a clip, translating captions, creating a voice, searching footage by describing it.",
+  tools:[
+   {t:"Premiere Generative Extend",s:"ship",d:"Lengthens a clip and its audio using Adobe Firefly. Works in 4K and vertical video, limited to about 10 seconds. Results carry Content Credentials that mark them as AI generated."},
+   {t:"Premiere Generative Media Tool",s:"ship",d:"Announced September 8, 2026. Draw a range on a track, describe what you want and generate video or sound effects in place. It can use Adobe Firefly or partner models from Google Veo, Kling, Runway and Luma, so the model behind a shot can change from one request to the next. Soundscape and music generation are in beta."},
+   {t:"Premiere caption translation",s:"ship",d:"Converts captions into 27 languages and can show several caption tracks at once."},
+   {t:"Resolve 21 AI Speech Generator",s:"ship",d:"Makes speech from text. Reports say it can create a voice from a clip as short as 10 seconds, with control of speed, pitch and inflection."},
+   {t:"Resolve 21 IntelliSearch",s:"ship",d:"Searches a project by describing what you want. IntelliScript also now accepts Final Draft or plain text scripts."},
+   {t:"Media Composer extensions",s:"ship",d:"Flawless, Quickture and Acclaim Audio are offered as AI powered extensions in Media Composer."}],
+  world:"Netflix said generative AI made a building collapse shot in the Argentine series El Eternauta, then published rules for partners in August 2025. Lionsgate and Runway signed a studio deal (US). Flawless AI (UK) does visual dubbing. Deepdub (Israel) and ElevenLabs do voice dubbing. Respeecher (Ukraine) converts voices.",
+  next:"Pickup shots and plates made on demand, a whole film dubbed with lips matched in every language, restored archive footage.",
+  q:"Whose work trained it, was its use disclosed, and did the performer agree to a copied voice or face?"},
+ {n:"Deep learning",c:"--l4",kw:"Transformers, CNNs, RNNs, LSTMs, autoencoders",
+  today:"Tools that look at picture or sound and change or separate it: masks, depth, stems, faces, sharpness.",
+  tools:[
+   {t:"Resolve 21 picture tools",s:"ship",d:"Magic Mask (with a new render and replace function), CineFocus, Face Age Transformer, Face Reshaper, Blemish Removal, UltraSharpen and Motion Deblur."},
+   {t:"Autodesk Flame 2027.1 and 2027.2",s:"ship",d:"Machine learning depth maps for indoor and outdoor shots, an Isolate tool that makes mattes with machine learning, and a model that makes normal maps from video for relighting."},
+   {t:"Premiere AI audio tools",s:"beta",d:"Public beta features announced September 8, 2026: crosstalk separation for overlapping dialogue, automatic ducking and a new speed change algorithm."},
+   {t:"Pro Tools 2026.11",s:"ship",d:"An AI stem separator, reported to run locally on the computer, and speech to text analysis built into the app."},
+   {t:"Foundry Nuke 17",s:"ship",d:"Released February 26, 2026. BigCat trains machine learning on tens or hundreds of shots at once, building on CopyCat. Used for roto assist, cleanup and reflection removal more than for generating images. Foundry says CopyCat's core models use licensed data."}],
+  world:"Australia: Blackmagic Design. United States: Autodesk and Avid. United Kingdom: Foundry. Metaphysic (UK) did real time face work on the film Here. Wētā FX (New Zealand) uses machine learning in facial work.",
+  next:"Cleanup and rough conforming done as footage is shot, dailies that arrive already searchable and synced.",
+  q:"Does a cleaned voice or an altered face still match what the performer actually gave?"},
+ {n:"Neural networks",c:"--l3",kw:"Perceptrons, cost functions, backpropagation, hidden layers",
+  today:"Mostly invisible. This is the machinery inside the layers above, now doing single jobs such as upscaling and cleanup.",
+  tools:[
+   {t:"Autodesk Flame 2026 upscaler",s:"ship",d:"A machine learning upscaling system added in Flame 2026."},
+   {t:"Retiming and denoise tools",s:"unc",d:"Speed Warp in Resolve and ML Timewarp in Flame use this layer. I did not re-check them for this draft."}],
+  world:"Found everywhere that professional software is sold.",
+  next:"Small models that run on a laptop or camera, so footage never leaves the room.",
+  q:"Where does the model run, and does the footage leave the building?"},
+ {n:"Machine learning",c:"--l2",kw:"Supervised, unsupervised, classification, reinforcement, regression",
+  today:"Software that sorts and labels: what is in a shot, which clip is a slate, what belongs together.",
+  tools:[
+   {t:"Premiere Media Intelligence",s:"ship",d:"Recognizes objects, camera angles and metadata so editors can search clips without logging them by hand. Adobe says it can search terabytes of footage in seconds."},
+   {t:"Resolve 21 Slate ID",s:"ship",d:"One of the nine new AI tools in Resolve 21. Reading slates is a labelling job of this kind."},
+   {t:"Avid Content Core",s:"ship",d:"A cloud data layer connected to Media Composer. Generally available since April 2026, with insights and intelligent media management added in September 2026."}],
+  world:"Used by broadcasters and streamers to organize archives. I have no single named example I can verify.",
+  next:"Predicting schedule and budget risk from past shows, flagging continuity errors before the lock.",
+  q:"Who checks the tags and the mistakes?"},
+ {n:"Classical AI",c:"--l1",kw:"Symbolic AI, expert systems, knowledge representation, logic",
+  today:"Rules a person wrote down: relinking and conforming media, delivery checks for loudness, format and captions, and metadata records.",
+  tools:[
+   {t:"Adobe Content Credentials",s:"ship",d:"A metadata record attached to Generative Extend results saying the media is AI generated. This is the closest working example of built in disclosure."},
+   {t:"Delivery and QC checkers",s:"unc",d:"Every distributor specifies loudness, format and caption rules and checks them. I did not check a current product list."}],
+  world:"Every distributor's delivery specification works this way. Netflix asks partners and vendors to tell it before using generative AI, allows temp uses such as mood boards with advance notice, and requires written approval for some uses.",
+  next:"Rules that check for AI disclosure, consent and licence records before a show can be delivered.",
+  q:"Who writes the rules for AI disclosure? This is the layer where accountability can be built in."}
+];
+const list=document.getElementById("lx-layers"),det=document.getElementById("lx-detail");
+function lxShow(i){
+  const x=L[i];
+  document.querySelectorAll("#lx-layers button").forEach((b,j)=>b.setAttribute("aria-pressed",j===i?"true":"false"));
+  det.style.setProperty("--c","var("+x.c+")");
+  det.innerHTML='<div><span class="lx-tag">Layer '+(L.length-i)+' of '+L.length+'</span><h2>'+x.n+'</h2></div>'
+   +'<div class="lx-blk"><h3>In post today</h3><p>'+x.today+'</p></div>'
+   +'<div class="lx-blk"><h3>Professional tools right now</h3><div class="lx-tools">'
+   +x.tools.map(t=>'<div class="lx-tool"><span class="lx-tag '+S[t.s][1]+'">'+S[t.s][0]+'</span><b>'+t.t+'</b><span class="d">'+t.d+'</span></div>').join("")
+   +'</div></div>'
+   +'<div class="lx-blk"><h3>Around the world</h3><p>'+x.world+'</p></div>'
+   +'<div class="lx-blk"><h3>What could come</h3><p>'+x.next+'</p></div>'
+   +'<div class="lx-blk lx-aq"><h3>The accountability question</h3><p>'+x.q+'</p></div>';
+}
+L.forEach((x,i)=>{
+  const li=document.createElement("li");
+  const b=document.createElement("button");
+  b.type="button";b.style.setProperty("--c","var("+x.c+")");
+  b.innerHTML='<span class="nm">'+x.n+'</span><span class="kw">'+x.kw+'</span>';
+  b.addEventListener("click",()=>lxShow(i));
+  li.appendChild(b);list.appendChild(li);
+});
+lxShow(0);
 </script>
