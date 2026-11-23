@@ -161,6 +161,20 @@ table.lg td:first-child{white-space:normal;min-width:190px;font-size:17px}
 .lgst.rul{border-color:var(--ink);color:var(--ink)}
 .lgst.pen{border-color:var(--amber);color:var(--amber);border-style:dashed}
 
+.fc-edge{fill:none;stroke-width:2.2;opacity:.85}
+.fc-edge.dim{opacity:.07}
+.fc-node{fill:var(--surface);stroke:var(--line)}
+.fc-n{font-family:var(--display);font-weight:600;font-size:19px;fill:var(--ink);text-transform:uppercase;letter-spacing:.02em}
+.fc-s{font-family:var(--body);font-size:12px;fill:var(--muted)}
+.fc-r{font-family:var(--body);font-size:14px;fill:var(--ink)}
+.fc-g{cursor:pointer;outline:none}
+.fc-g:hover .fc-node{stroke:var(--ink)}
+.fc-g:focus-visible .fc-node{stroke:var(--ink);stroke-width:2.5}
+.fc-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.fc-legend span{display:inline-flex;align-items:center;gap:8px}
+.fc-legend i{display:inline-block;width:28px;height:0;border-top:3px solid var(--c)}
+.fc-list summary{cursor:pointer;font-weight:500}
+.fc-list ul{margin:8px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
 footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 @media (max-width:860px){
   .pipe,.chain{grid-template-columns:1fr}
@@ -220,6 +234,14 @@ footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:
     <h3>Tools with the job built in</h3>
     <div class="bars" id="bars"></div>
     <p class="tc" id="barnote"></p>
+  </div>
+  <div class="panel stack">
+    <h3>How each tool connects to AI</h3>
+    <p>Each line runs from a professional tool to the AI it connects to. Hover or tap a tool or an AI source to light up its lines. The colour of a line shows how the connection works.</p>
+    <div class="fc-legend" id="fc-legend"></div>
+    <div class="scroll" id="fc-chart"></div>
+    <details class="fc-list"><summary>Read the chart as a list</summary><ul id="fc-list"></ul></details>
+    <p class="note">Lines show connections announced or shipping as of November 2026, checked in the sources listed under Reel 3. They show what a tool connects to, not how often people use it. Final Cut Pro, iZotope RX and other tools are not covered yet.</p>
   </div>
 </section>
 
@@ -686,4 +708,83 @@ L.forEach((x,i)=>{
   li.appendChild(b);list.appendChild(li);
 });
 lxShow(0);
+</script>
+<script>
+const LOGOS={}; // company name to data URI, filled in when official logo files are supplied
+const FT={A:["Built in, the vendor's own models","--teal"],B:["Built in, calls another company's model","--amber"],C:["Third party extension","--l1"],D:["Chat assistant or agent","--l4"]};
+const FS=[
+ {id:"pp",n:"Premiere Pro",co:"Adobe",d:"Picture"},
+ {id:"ae",n:"After Effects",co:"Adobe",d:"Visual effects"},
+ {id:"mc",n:"Media Composer",co:"Avid",d:"Picture"},
+ {id:"pt",n:"Pro Tools",co:"Avid",d:"Sound"},
+ {id:"dr",n:"DaVinci Resolve",co:"Blackmagic Design",d:"Picture, sound, colour"},
+ {id:"fl",n:"Flame",co:"Autodesk",d:"Visual effects"},
+ {id:"nk",n:"Nuke",co:"Foundry",d:"Visual effects"}];
+const FA=[
+ {id:"fi",n:"Firefly",co:"Adobe"},{id:"veo",n:"Veo",co:"Google"},{id:"kl",n:"Kling",co:""},{id:"rw",n:"Runway",co:""},{id:"lm",n:"Luma",co:""},
+ {id:"aas",n:"AI Assistant (beta)",co:"Adobe"},{id:"gem",n:"Gemini",co:"Google"},
+ {id:"fw",n:"Flawless",co:""},{id:"qk",n:"Quickture",co:""},{id:"ac",n:"Acclaim Audio",co:""},
+ {id:"avm",n:"On device AI models",co:"Avid"},{id:"pte",n:"Third party Extensions",co:"Avid"},
+ {id:"bnm",n:"Neural Engine",co:"Blackmagic Design"},{id:"mcp",n:"Chat assistant (MCP)",co:"single source"},
+ {id:"adk",n:"Machine learning models",co:"Autodesk"},{id:"fnd",n:"CopyCat, BigCat, Cattery",co:"Foundry"}];
+// [from, to, type, tooltip, dashed]
+const FE=[
+ ["pp","fi","A","Generative Extend and the Generative Media Tool use Adobe Firefly"],
+ ["pp","veo","B","Generative Media Tool can use Google Veo"],
+ ["pp","kl","B","Generative Media Tool can use Kling"],
+ ["pp","rw","B","Generative Media Tool can use Runway"],
+ ["pp","lm","B","Generative Media Tool can use Luma"],
+ ["pp","aas","D","Premiere AI Assistant, public beta"],
+ ["ae","aas","D","After Effects AI Assistant, public beta"],
+ ["mc","gem","B","Google Gemini through Google Cloud and Avid Content Core. A Gemini panel was previewed in Media Composer 2026.8"],
+ ["mc","fw","C","Flawless as a Media Composer AI extension"],
+ ["mc","qk","C","Quickture as a Media Composer AI extension"],
+ ["mc","ac","C","Acclaim Audio as a Media Composer AI extension"],
+ ["pt","avm","A","AI Stem Separator, reported to run locally, and speech to text analysis"],
+ ["pt","pte","C","New Extensions format for third party tools in Pro Tools 2026.11"],
+ ["dr","bnm","A","Resolve 21 AI tools run on the DaVinci Neural Engine"],
+ ["dr","mcp","D","One source reports a Resolve Studio MCP server for chat assistants. Not confirmed by a second source",true],
+ ["fl","adk","A","Flame 2027 machine learning depth, matte, normal map and upscaling models"],
+ ["nk","fnd","A","Nuke 17 CopyCat and BigCat, plus Foundry hosted Cattery models"]];
+(function(){
+ const NS="http://www.w3.org/2000/svg",W=1000,LW=230,RX=740,RW=260,RH=34,RG=8,LH=58;
+ const rI={};FA.forEach((a,i)=>rI[a.id]=i);
+ const rc=i=>12+i*(RH+RG)+RH/2;
+ const ly=FS.map(s=>{const t=FE.filter(e=>e[0]===s.id).map(e=>rc(rI[e[1]]));return t.reduce((a,b)=>a+b,0)/t.length-LH/2;});
+ for(let i=1;i<ly.length;i++){if(ly[i]<ly[i-1]+LH+10)ly[i]=ly[i-1]+LH+10;}
+ const H=Math.max(12+FA.length*(RH+RG),ly[ly.length-1]+LH+12);
+ const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;};
+ const svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Flowchart linking each professional editing, sound and visual effects tool to the AI it connects to. A list version follows."});
+ svg.style.width="100%";svg.style.minWidth="900px";svg.style.height="auto";svg.style.display="block";
+ const paths=[];
+ FE.forEach(e=>{
+  const si=FS.findIndex(s=>s.id===e[0]);const y1=ly[si]+LH/2,y2=rc(rI[e[1]]);
+  const p=el("path",{d:"M"+LW+","+y1+" C"+(LW+250)+","+y1+" "+(RX-250)+","+y2+" "+RX+","+y2,class:"fc-edge"},svg);
+  p.style.stroke="var("+FT[e[2]][1]+")";if(e[4])p.setAttribute("stroke-dasharray","6 5");
+  p._s=e[0];p._t=e[1];paths.push(p);
+  el("title",{},p).textContent=e[3];
+ });
+ function hl(id){paths.forEach(p=>p.classList.toggle("dim",id!==null&&p._s!==id&&p._t!==id));}
+ function node(x,y,w,h,id,lines,logoCo){
+  const g=el("g",{class:"fc-g",tabindex:"0"},svg);
+  el("rect",{x:x,y:y,width:w,height:h,rx:4,class:"fc-node"},g);
+  const off=LOGOS[logoCo]?44:0;
+  if(LOGOS[logoCo])el("image",{href:LOGOS[logoCo],x:x+8,y:y+(h-30)/2,width:30,height:30,preserveAspectRatio:"xMidYMid meet"},g);
+  lines(g,x+12+off,y);
+  g.addEventListener("mouseenter",()=>hl(id));g.addEventListener("mouseleave",()=>hl(null));
+  g.addEventListener("focus",()=>hl(id));g.addEventListener("blur",()=>hl(null));
+  g.addEventListener("click",()=>hl(id));
+ }
+ FS.forEach((s,i)=>node(0,ly[i],LW,LH,s.id,(g,tx,y)=>{
+  el("text",{x:tx,y:y+25,class:"fc-n"},g).textContent=s.n;
+  el("text",{x:tx,y:y+44,class:"fc-s"},g).textContent=s.co+" · "+s.d;
+ },s.co));
+ FA.forEach((a,i)=>node(RX,12+i*(RH+RG),RW,RH,a.id,(g,tx,y)=>{
+  const t=el("text",{x:tx,y:y+RH/2+5,class:"fc-r"},g);t.textContent=a.n;
+  if(a.co){const s=el("tspan",{class:"fc-s",dx:8},t);s.textContent=a.co;}
+ },a.co));
+ document.getElementById("fc-chart").appendChild(svg);
+ document.getElementById("fc-legend").innerHTML=Object.keys(FT).map(k=>'<span><i style="--c:var('+FT[k][1]+')"></i>'+FT[k][0]+'</span>').join("")+'<span><i style="--c:var(--muted);border-top-style:dashed"></i>Dashed: single source, unconfirmed</span>';
+ document.getElementById("fc-list").innerHTML=FS.map(s=>'<li><b>'+s.n+'</b> ('+s.co+'): '+FE.filter(e=>e[0]===s.id).map(e=>{const a=FA[rI[e[1]]];return a.n+(a.co?' ('+a.co+')':'')+', '+FT[e[2]][0].toLowerCase()+(e[4]?', single source':'');}).join('; ')+'.</li>').join("");
+})();
 </script>
